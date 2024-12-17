@@ -5,7 +5,7 @@ if(!defined('DB_SERVER')) {
 
 class DBConnection {
 
-    private $host = 'autorack.proxy.rlwy.net';  // Host from the URL
+    private $host = 'mysql.railway.internal';  // Host from the URL
     private $username = 'root';                  // Username from the URL
     private $password = 'zIcVZvexmpATLkKKDLrPnnihLByJfijI'; // Password from the URL
     private $database = 'railway';               // Database name from the URL
