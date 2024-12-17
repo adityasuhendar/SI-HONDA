@@ -9,7 +9,7 @@ class DBConnection {
     private $username = 'root';                  // Username from the URL
     private $password = 'zIcVZvexmpATLkKKDLrPnnihLByJfijI'; // Password from the URL
     private $database = 'railway';               // Database name from the URL
-    private $port = 21299;                       // Port from the URL
+    private $port = 3306;                       // Port from the URL
     
     public $conn;
     
