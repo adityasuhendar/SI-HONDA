@@ -1,32 +1,29 @@
-# Gunakan PHP 8.1 dengan Apache
-FROM php:8.1-apache
+# Gunakan PHP 8.3 dengan Apache
+FROM php:8.3-apache
 
 # Install ekstensi PHP yang diperlukan
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
     libpng-dev \
     libjpeg-dev \
     libonig-dev \
     libxml2-dev \
     zip \
     unzip \
-    && docker-php-ext-install pdo_mysql mbstring gd
+    && docker-php-ext-install mysqli gd
 
-# Set working directory
+# Set direktori kerja Apache
 WORKDIR /var/www/html
 
 # Copy semua file proyek ke dalam container
 COPY . .
 
-# Install Composer dependencies (jika ada)
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer install --no-dev --optimize-autoloader || true
+# Berikan izin untuk Apache
+RUN chown -R www-data:www-data /var/www/html
 
-# Optional: Konfigurasi upload file
+# Konfigurasi upload file
 RUN echo "upload_max_filesize = 10M\npost_max_size = 12M" > /usr/local/etc/php/conf.d/custom.ini
 
-# Expose port Apache
+# Expose port 80 untuk Apache
 EXPOSE 80
 
 # Jalankan Apache
