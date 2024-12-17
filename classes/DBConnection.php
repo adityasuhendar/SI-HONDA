@@ -5,11 +5,11 @@ if(!defined('DB_SERVER')) {
 
 class DBConnection {
 
-    private $host = 'mysql.railway.internal';  // Host from the URL
+    private $host = 'hautorack.proxy.rlwy.net';  // Host from the URL
     private $username = 'root';                  // Username from the URL
     private $password = 'zIcVZvexmpATLkKKDLrPnnihLByJfijI'; // Password from the URL
     private $database = 'railway';               // Database name from the URL
-    private $port = 3306;                       // Port from the URL
+    private $port = 21299;                       // Port from the URL
     
     public $conn;
     
