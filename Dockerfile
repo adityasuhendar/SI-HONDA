@@ -1,5 +1,5 @@
 # Gunakan PHP 8.3 dengan Apache
-FROM php:8.3-apache
+FROM php:8.2-apache
 
 # Install ekstensi PHP yang diperlukan
 RUN apt-get update && apt-get install -y \
@@ -27,4 +27,5 @@ RUN echo "upload_max_filesize = 10M\npost_max_size = 12M" > /usr/local/etc/php/c
 EXPOSE 80
 
 # Jalankan Apache
+ENV APACHE_RUN_PORT=${PORT}
 CMD ["apache2-foreground"]
