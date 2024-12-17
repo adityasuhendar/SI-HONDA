@@ -358,71 +358,102 @@ Class Master extends DBConnection {
 		return json_encode($resp);
 
 	}
-	function save_request(){
-		if(empty($_POST['id']))
-		$_POST['client_id'] = $this->settings->userdata('id');
-		extract($_POST);
-		$data = "";
-		foreach($_POST as $k=> $v){
-			if(in_array($k,array('client_id','service_type','mechanic_id','status'))){
-				if(!empty($data)){ $data .= ", "; }
+	
+function save_request(){
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 
-				$data .= " `{$k}` = '{$v}'";
+    if(empty($_POST['id']))
+        $_POST['client_id'] = $this->settings->userdata('id');
+    extract($_POST);
 
-			}
-		}
-		if(empty($id)){
-			$sql = "INSERT INTO `service_requests` set {$data} ";
-		}else{
-			$sql = "UPDATE `service_requests` set {$data} where id ='{$id}' ";
-		}
-		$save = $this->conn->query($sql);
-		if($save){
-			$rid = empty($id) ? $this->conn->insert_id : $id ;
-			$data = "";
-			foreach($_POST as $k=> $v){
-				if(!in_array($k,array('id','client_id','service_type','mechanic_id','status'))){
-					if(!empty($data)){ $data .= ", "; }
-					if(is_array($_POST[$k]))
-					$v = implode(",",$_POST[$k]);
-					$v = $this->conn->real_escape_string($v);
-					$data .= "('{$rid}','{$k}','{$v}')";
-				}
-			}
-			$sql = "INSERT INTO `request_meta` (`request_id`,`meta_field`,`meta_value`) VALUES {$data} ";
-			$this->conn->query("DELETE FROM `request_meta` where `request_id` = '{$rid}' ");
-			$save = $this->conn->query($sql);
-			if($save){
-				$resp['status'] = 'success';
-				$resp['id'] = $rid;
-				if(empty($id))
-				$resp['msg'] = " Service Request has been submitted successfully.";
-				else
-				$resp['msg'] = " Service Request details has been updated successfully.";
-			}else{
-				$resp['status'] = 'failed';
-				$resp['error'] = $this->conn->error;
-				$resp['sql'] = $sql;
-				if(empty($id))
-				$resp['msg'] = " Service Request has failed to submit.";
-				else
-				$resp['msg'] = " Service Request details has failed to update.";
-				$this->conn->query("DELETE FROM `service_requests` where id = '{$rid}'");
-			}
+    // Validasi tanggal_service
+    if (empty($tanggal_service)) {
+        echo "Error: Tanggal Service is required.";
+        exit();
+    }
 
-		}else{
-			$resp['status'] = 'failed';
-			$resp['error'] = $this->conn->error;
-			$resp['sql'] = $sql;
-			if(empty($id))
-			$resp['msg'] = " Service Request has failed to submit.";
-			else
-			$resp['msg'] = " Service Request details has failed to update.";
-		}
-		if($resp['status'] == 'success')
-		$this->settings->set_flashdata("success", $resp['msg']);
-		return json_encode($resp);
-	}
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal_service)) {
+        echo "Error: Invalid Tanggal Service format. Expected format: YYYY-MM-DD.";
+        exit();
+    }
+
+    // Proses data untuk service_requests
+    $data = "";
+    foreach($_POST as $k=> $v){
+        if(in_array($k, array('client_id','vehicle_type','vehicle_variant','current_kilometer','tanggal_service','service_time','keluhan','service_type','address','mechanic_id','status'))){
+            $v = $this->conn->real_escape_string($v); // Hindari SQL Injection
+            if(!empty($data)){ $data .= ", "; }
+            $data .= " `{$k}` = '{$v}'";
+        }
+    }
+
+    // Query untuk service_requests
+    if(empty($id)){
+        $sql = "INSERT INTO `service_requests` set {$data} ";
+        $save = $this->conn->query($sql);
+        $rid = $this->conn->insert_id;
+    }else{
+        $sql = "UPDATE `service_requests` set {$data} where id ='{$id}' ";
+        $save = $this->conn->query($sql);
+        $rid = $id;
+    }
+
+    if(!$save){
+        echo "Error in service_requests query: " . $this->conn->error;
+        exit();
+    }
+
+    // Proses data untuk request_meta
+    $this->conn->query("DELETE FROM `request_meta` WHERE `request_id` = '{$rid}' "); // Hapus meta lama
+
+    $meta_data = [];
+    foreach($_POST as $k => $v){
+        if(!in_array($k, array('id','client_id','mechanic_id','status'))){ // Ambil data meta_field
+            $v = $this->conn->real_escape_string(is_array($v) ? implode(",", $v) : $v); // Handle array input
+            $meta_data[] = "('{$rid}', '{$k}', '{$v}')";
+        }
+    }
+
+    if(!empty($meta_data)){
+        $meta_query = "INSERT INTO `request_meta` (`request_id`, `meta_field`, `meta_value`) VALUES " . implode(", ", $meta_data);
+        $meta_save = $this->conn->query($meta_query);
+
+        if(!$meta_save){
+            echo "Error in request_meta query: " . $this->conn->error;
+            exit();
+        }
+    }
+
+    // Tambahkan data ke client_maintenance
+    $client_id = $_POST['client_id'];
+    $vehicle_variant = $this->conn->real_escape_string($_POST['vehicle_variant']);
+    $next_service = date('Y-m-d', strtotime($tanggal_service . ' +30 days'));
+
+    $insert_maintenance = "
+        INSERT INTO client_maintenance 
+        (client_id, vehicle, last_service, next_service, notification_status)
+        VALUES 
+        ('{$client_id}', '{$vehicle_variant}', '{$tanggal_service}', '{$next_service}', 'Pending')
+        ON DUPLICATE KEY UPDATE
+        last_service = '{$tanggal_service}', next_service = '{$next_service}', notification_status = 'Pending'
+    ";
+
+    $maintenance_save = $this->conn->query($insert_maintenance);
+
+    if(!$maintenance_save){
+        echo "Error in client_maintenance query: " . $this->conn->error;
+        exit();
+    }
+
+    // Respon sukses
+    $resp['status'] = 'success';
+    $resp['id'] = $rid;
+    $resp['msg'] = "Service Request and Maintenance Schedule have been submitted successfully.";
+    return json_encode($resp);
+}
+
+	
 	function delete_request(){
 		extract($_POST);
 		$del = $this->conn->query("DELETE FROM `service_requests` where id = '{$id}'");

@@ -37,7 +37,7 @@
                       </div>
                       <div class="navbar-nav nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="fa fa-user"></i> Howdy, <?= $_settings->userdata('email') ?>
+                          <i class="fa fa-user"></i> <?= $_settings->userdata('email') ?>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                           <a class="dropdown-item" href="./?p=my_orders">My Orders</a>

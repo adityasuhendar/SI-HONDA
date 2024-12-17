@@ -83,3 +83,9 @@
     </section>
 </body> -->
 </html>
+
+<script>
+    $(document).ready(function() {
+    $('#topNavBar').addClass('bg-transparent navbar-dark');
+});
+</script>

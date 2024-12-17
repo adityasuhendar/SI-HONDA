@@ -1,11 +1,11 @@
  <!-- Header-->
- <header class="bg-dark py-5" id="main-header">
+<header class="bg-dark py-5" id="main-header">
     <div class="container h-50 d-flex align-items-end justify-content-center w-100">
         <div class="text-center text-white w-100">
             <h1 class="display-4 fw-bolder"><?php echo $_settings->info('name') ?></h1>
             <!-- <p class="lead fw-normal text-white-50 mb-0">We will take care of your vehicle</p> -->
             <div class="col-auto mt-2">
-                <button class="btn btn-primary btn-lg rounded-0" id="send_request" type="button">Daftar Service</button>
+                <button class="btn btn-primary btn-lg rounded-100" id="send_request" type="button">Daftar Service</button>
             </div>
         </div>
     </div>
@@ -80,15 +80,7 @@
         })
 
     })
-    $(document).scroll(function() { 
-        $('#topNavBar').removeClass('bg-transparent navbar-dark bg-primary')
-        if($(window).scrollTop() === 0) {
-           $('#topNavBar').addClass('navbar-dark bg-transparent')
-        }else{
-           $('#topNavBar').addClass('navbar-dark bg-primary')
-        }
+    $(document).ready(function() {
+        $('#topNavBar').addClass('bg-transparent navbar-dark');
     });
-    $(function(){
-        $(document).trigger('scroll')
-    })
 </script>

@@ -1,33 +1,36 @@
 <?php
-if(!defined('DB_SERVER')) {
+if (!defined('DB_SERVER')) {
     require_once("../initialize.php");
 }
 
 class DBConnection {
 
-    private $host = 'autorack.proxy.rlwy.net';  // Host from the URL
-    private $username = 'root';                  // Username from the URL
-    private $password = 'zIcVZvexmpATLkKKDLrPnnihLByJfijI'; // Password from the URL
-    private $database = 'railway';               // Database name from the URL
-    private $port = 21299;                       // Port from the URL
+    private $host = '127.0.0.1';  // Host (localhost/127.0.0.1)
+    private $username = 'root';  // Username default MySQL
+    private $password = '';      // Kosong jika tidak ada password
+    private $database = 'bpsms_db';  // Nama database, sesuaikan
+    private $port = 3306;        // Default port MySQL
     
     public $conn;
     
     public function __construct() {
-        // Try to create a connection
+        // Membuat koneksi
         if (!isset($this->conn)) {
-            $this->conn = new mysqli($this->host, $this->username, $this->password, $this->database, $this->port);
+            $this->conn = new mysqli($this->host, $this->username, $this->password, $this->database);
             
             if ($this->conn->connect_error) {
-                echo 'Connection failed: ' . $this->conn->connect_error;
+                echo 'Koneksi gagal: ' . $this->conn->connect_error;
                 exit;
             }
         }
     }
 
     public function __destruct() {
-        // Close the connection when done
-        $this->conn->close();
+        // Menutup koneksi saat tidak digunakan
+        if ($this->conn) {
+            $this->conn->close();
+        }
     }
 }
 ?>
+

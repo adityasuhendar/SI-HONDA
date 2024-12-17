@@ -296,9 +296,16 @@ INSERT INTO `service_list` (`id`, `service`, `description`, `status`, `delete_fl
 CREATE TABLE `service_requests` (
   `id` int(30) NOT NULL,
   `client_id` int(30) NOT NULL,
-  `service_type` text NOT NULL,
+  `vehicle_type` varchar(255) NOT NULL,
+  `vehicle_variant` varchar(255) NOT NULL,
+  `current_kilometer` int(30) NOT NULL,
+  `tanggal_service` date NOT NULL,
+  `service_time` time NOT NULL,
+  `keluhan` text NOT NULL,
+  `service_type` ENUM('Pickup','Bengkel') NOT NULL,
   `mechanic_id` int(30) DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 0,
+  `address` varchar(255) DEFAULT NULL,
   `date_created` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

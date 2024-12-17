@@ -55,14 +55,33 @@
                         </p>
                       </a>
                     </li>
-                    <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=service_requests" class="nav-link nav-service_requests">
+                    
+                    <li class="nav-item has-treeview">
+                      <a href="#" class="nav-link nav-service_requests nav-is-tree">
                         <i class="nav-icon fas fa-file-invoice"></i>
                         <p>
-                          Service Requests
+                          Services  
+                          <i class="right fas fa-angle-left"></i>
                         </p>
                       </a>
+                      <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                          <a href="<?php echo base_url ?>admin/?page=service_requests" class="nav-link nav-service_requests_pending">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Service Request</p>
+                          </a>
+                        </li>
+                      </ul>
+                      <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                          <a href="<?php echo base_url ?>admin/?page=client_maintenance" class="nav-link nav-service_requests_pending">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Client Maintenance</p>
+                          </a>
+                        </li>
+                      </ul>
                     </li>
+
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=mechanics" class="nav-link nav-mechanics">
                         <i class="nav-icon fas fa-user-friends"></i>

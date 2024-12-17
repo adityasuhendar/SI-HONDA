@@ -16,18 +16,37 @@
 			<table class="table table-bordered table-stripped">
 				<colgroup>
 					<col width="5%">
-					<col width="35%">
-					<col width="25%">
-					<col width="25%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
 					<col width="10%">
 				</colgroup>
 				<thead>
 					<tr>
 						<th>#</th>
-						<th>Date Created</th>
+						<th>Date Requested</th>
 						<th>Client Name</th>
+						<th>Vehicle Type</th>
+						<th>Vehicle Variant</th>
+						<th>Current Kilometer</th>
+						<th>Service Date</th>
+						<th>Service Time</th>
+						<th>Keluhan</th>
+						<th>Service Type</th>
 						<th>Service</th>
 						<th>Status</th>
+                        <th>Adress</th>
+                        <th>Mechanic</th>
 						<th>Action</th>
 					</tr>
 				</thead>
@@ -38,11 +57,19 @@
 						while($row = $qry->fetch_assoc()):
 							$sids = $conn->query("SELECT meta_value FROM request_meta where request_id = '{$row['id']}' and meta_field = 'service_id'")->fetch_assoc()['meta_value'];
 							$services  = $conn->query("SELECT * FROM service_list where id in ({$sids}) ");
+                            $mechanic = $conn->query("SELECT * FROM mechanics_list where id = '{$row['mechanic_id']}'")->fetch_assoc();
 					?>
 						<tr>
 							<td class="text-center"><?php echo $i++; ?></td>
 							<td><?php echo date("Y-m-d H:i",strtotime($row['date_created'])) ?></td>
 							<td><?php echo ucwords($row['fullname']) ?></td>
+                            <td><?php echo $row['vehicle_type'] ?></td>
+                            <td><?php echo $row['vehicle_variant'] ?></td>
+                            <td><?php echo $row['current_kilometer'] ?></td>
+                            <td><?php echo $row['tanggal_service'] ?></td>
+                            <td><?php echo $row['service_time'] ?></td>
+                            <td><?php echo $row['keluhan'] ?></td>
+                            <td><?php echo $row['service_type'] ?></td>
 							<td>
 								<p class="m-0 truncate-3">
 								<?php 
@@ -68,6 +95,8 @@
 									<span class="badge badge-secondary rounded-pill px-3">Pending</span>
 								<?php endif; ?>
 							</td>
+                            <td><?php echo $row['address'] != null ? $row['address'] : 'N/A'?></td>
+                            <td><?php echo $row['mechanic_id'] != null ? $mechanic['name'] : 'N/A' ?></td>
 							<td align="center">
 								 <button type="button" class="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
 				                  		Action

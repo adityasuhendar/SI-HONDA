@@ -55,16 +55,8 @@ while($row = $meta->fetch_assoc()){
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="vehicle_name" class="control-label">Vehicle Name</label>
-                    <input type="text" name="vehicle_name" id="vehicle_name" class="form-control form-control-sm rounded-0" value="<?php echo isset($vehicle_name) ? $vehicle_name : "" ?>" required>
-                </div>
-                <div class="form-group">
-                    <label for="vehicle_registration_number" class="control-label">Nomor STNK</label>
-                    <input type="text" name="vehicle_registration_number" id="vehicle_registration_number" class="form-control form-control-sm rounded-0" value="<?php echo isset($vehicle_registration_number) ? $vehicle_registration_number : "" ?>" required>
-                </div>
-                <div class="form-group">
-                    <label for="vehicle_model" class="control-label">Vehicle Model</label>
-                    <input type="text" name="vehicle_model" id="vehicle_model" class="form-control form-control-sm rounded-0" value="<?php echo isset($vehicle_model) ? $vehicle_model : "" ?>" required>
+                    <label for="vehicle_name" class="control-label">Vehicle Variant</label>
+                    <input type="text" name="vehicle_variant" id="vehicle_variant" class="form-control form-control-sm rounded-0" value="<?php echo isset($vehicle_variant) ? $vehicle_variant : "" ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="service_id" class="control-label">Services</label>
@@ -81,13 +73,14 @@ while($row = $meta->fetch_assoc()){
                 <div class="form-group">
                     <label for="service_type" class="control-label">Request Type</label>
                     <select name="service_type" id="service_type" class="form-select form-select-sm select2 rounded-0" required>
-                        <option <?php echo isset($service_type) && $service_type == 'Drop Off' ? "selected" : '' ?>>Drop Off</option>
+                        <option <?php echo isset($service_type) && $service_type == 'Drop Off' ? "selected" : '' ?>>Bengkel</option>
                         <option <?php echo isset($service_type) && $service_type == 'Pick Up' ? "selected" : '' ?>>Pick Up</option>
                     </select>
                 </div>
-                <div class="form-group" <?php echo isset($service_type) && $service_type == 'Drop Off' ? 'style="display:none"' : '' ?>>
+                <div class="form-group" <?php echo isset($service_type) && $service_type == 'Bengkel' ? 'style="display:none"' : '' ?>>
                     <label for="pickup_address" class="control-label">Pick up Address</label>
-                    <textarea rows="3" name="pickup_address" id="pickup_address" class="form-control form-control-sm rounded-0" style="resize:none"><?php echo isset($pickup_address) ? $pickup_address : "" ?></textarea>
+                    <textarea rows="3" name="address" id="address" class="form-control form-control-sm rounded-0"
+                        style="resize:none"><?php echo isset($address) ? $address : "" ?></textarea>
                 </div>
             </div>
         </div>
