@@ -1,31 +1,53 @@
-# Gunakan PHP 8.3 dengan Apache
-FROM php:8.2-apache
+FROM php:8.1-apache
 
-# Install ekstensi PHP yang diperlukan
+# Arguments defined in docker-compose.yml
+ARG user
+ARG uid
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
+    git \
+    curl \
     libpng-dev \
-    libjpeg-dev \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip \
-    && docker-php-ext-install mysqli gd
+    unzip
 
-# Set direktori kerja Apache
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set up node and npm
+
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash
+RUN apt-get update && apt-get -y install nodejs 
+
+# Set working directory
+WORKDIR /var/www
+
+RUN apt-get update && apt-get install -y \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd
+
 WORKDIR /var/www/html
-
-# Copy semua file proyek ke dalam container
 COPY . .
 
-# Berikan izin untuk Apache
-RUN chown -R www-data:www-data /var/www/html
+#Modify php.ini setings
 
-# Konfigurasi upload file
-RUN echo "upload_max_filesize = 10M\npost_max_size = 12M" > /usr/local/etc/php/conf.d/custom.ini
+RUN touch /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "upload_max_filesize = 10M;" >> /usr/local/etc/php/conf.d/uploads.ini
 
-# Expose port 80 untuk Apache
-EXPOSE 80
+#Serve the application
 
-# Jalankan Apache
-ENV APACHE_RUN_PORT=${PORT}
-CMD ["apache2-foreground"]
+RUN composer install
+RUN npm install
+CMD php artisan migrate --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=$PORT
